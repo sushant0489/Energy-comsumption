@@ -2,3 +2,4 @@ gradio
 joblib
 pandas
 scikit-learn
+plotly
