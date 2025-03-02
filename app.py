@@ -96,6 +96,8 @@ except Exception as e:
     print(f"Error reading EnergyConsumption.csv: {e}. Using empty DataFrame.")
 
 def predict_and_compare(Year, Month, US_Population):
+    # Convert Month from index (0-11) to actual month number (1-12)
+    Month = Month + 1
     # Predict energy consumption
     predicted_consumption = predict_energy_consumption(Year, Month, US_Population)
 
