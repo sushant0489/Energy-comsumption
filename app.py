@@ -68,12 +68,12 @@ iface = gr.Interface(
 )
 
 # Launch the dashboard
-iface.launch()
-# annual_iface = gr.Interface(
-#     fn=predict_annual_energy_consumption,
-#     inputs=annual_inputs,
-#     outputs="number",
-#     title="Annual Energy Consumption Prediction",
-#     description="Predict total annual energy consumption using the Random Forest model."
-# )
-# annual_iface.launch()
+# iface.launch()
+annual_iface = gr.Interface(
+    fn=predict_annual_energy_consumption,
+    inputs=annual_inputs,
+    outputs="number",
+    title="Annual Energy Consumption Prediction",
+    description="Predict total annual energy consumption using the Random Forest model."
+)
+annual_iface.launch()
