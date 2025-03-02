@@ -135,7 +135,7 @@ def predict_and_compare(Year, Month, US_Population):
         legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
     )
 
-    difference = predicted_consumption - actual_consumption
+    difference = ((predicted_consumption - actual_consumption) / actual_consumption) * 100 if actual_consumption != 0 else 0
     return float(predicted_consumption), float(actual_consumption), float(difference), fig
 
 comparison_inputs = [
@@ -149,7 +149,7 @@ comparison_inputs = [
 comparison_outputs = [
     gr.Number(label="Predicted Energy Consumption (Quadrillion Btu)", precision=3),
     gr.Number(label="Actual Energy Consumption (Quadrillion Btu)", precision=3),
-    gr.Number(label="Difference (Predicted - Actual) (Quadrillion Btu)", precision=3),
+    gr.Number(label="Error Percentage", precision=3),
     gr.Plot(label="Comparison Graph")
 ]
 
