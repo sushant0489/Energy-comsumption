@@ -147,9 +147,9 @@ comparison_inputs = [
 ]
 
 comparison_outputs = [
-    gr.Number(label="Predicted Energy Consumption (Quadrillion Btu)", precision=3),
-    gr.Number(label="Actual Energy Consumption (Quadrillion Btu)", precision=3),
-    gr.Number(label="Error Percentage", precision=3),
+    gr.Number(label="Predicted Energy Consumption (Quadrillion Btu)", precision=6),
+    gr.Number(label="Actual Energy Consumption (Quadrillion Btu)", precision=6),
+    gr.Number(label="Error Percentage", precision=6),
     gr.Plot(label="Comparison Graph")
 ]
 
