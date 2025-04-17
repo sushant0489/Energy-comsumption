@@ -96,9 +96,7 @@ except Exception as e:
     print(f"Error reading EnergyConsumption.csv: {e}. Using empty DataFrame.")
 
 def predict_and_compare(Year, Month, US_Population):
-    # Convert Month from index (0-11) to actual month number (1-12)
     Month = Month + 1
-    # Predict energy consumption
     predicted_consumption = predict_energy_consumption(Year, Month, US_Population)
 
     # Find actual consumption if available
@@ -112,31 +110,46 @@ def predict_and_compare(Year, Month, US_Population):
             print(f"Error finding actual data: {e}")
             actual_consumption = 0
 
-    # Create comparison plot
+    # Prepare data for the line chart and error graph
     months = list(range(1, 13))
     predicted_values = [predict_energy_consumption(Year, m, US_Population) for m in months]
     actual_values = []
-    
+    error_percentages = []
+
     for m in months:
         try:
             actual = actual_data[(actual_data['Year'] == Year) & (actual_data['Month'] == m)]['Energy Consumption'].values[0]
             actual_values.append(actual)
+            error = ((predicted_values[m-1] - actual) / actual) * 100 if actual != 0 else None
+            error_percentages.append(error)
         except:
             actual_values.append(None)
+            error_percentages.append(None)
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=months, y=predicted_values, name='Predicted', line=dict(color='blue')))
-    fig.add_trace(go.Scatter(x=months, y=actual_values, name='Actual', line=dict(color='red')))
-    
-    fig.update_layout(
+    # Comparison line plot
+    fig_comparison = go.Figure()
+    fig_comparison.add_trace(go.Scatter(x=months, y=predicted_values, name='Predicted', line=dict(color='blue')))
+    fig_comparison.add_trace(go.Scatter(x=months, y=actual_values, name='Actual', line=dict(color='red')))
+    fig_comparison.update_layout(
         title=f'Energy Consumption Comparison for Year {Year}',
         xaxis_title='Month',
         yaxis_title='Energy Consumption (Quadrillion Btu)',
         legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
     )
 
+    # Error bar plot
+    fig_error = go.Figure()
+    fig_error.add_trace(go.Bar(x=months, y=error_percentages, name='Error %', marker_color='orange'))
+    fig_error.update_layout(
+        title=f'Monthly Prediction Error (%) for Year {Year}',
+        xaxis_title='Month',
+        yaxis_title='Error Percentage',
+        yaxis=dict(ticksuffix='%'),
+        legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
+    )
+
     difference = ((predicted_consumption - actual_consumption) / actual_consumption) * 100 if actual_consumption != 0 else 0
-    return float(predicted_consumption), float(actual_consumption), float(difference), fig
+    return float(predicted_consumption), float(actual_consumption), float(difference), fig_comparison, fig_error
 
 comparison_inputs = [
     gr.Number(label="Year", precision=0),
@@ -150,8 +163,10 @@ comparison_outputs = [
     gr.Number(label="Predicted Energy Consumption (Quadrillion Btu)", precision=6),
     gr.Number(label="Actual Energy Consumption (Quadrillion Btu)", precision=6),
     gr.Number(label="Error Percentage", precision=6),
-    gr.Plot(label="Comparison Graph")
+    gr.Plot(label="Comparison Graph"),
+    gr.Plot(label="Monthly Error Graph")
 ]
+
 
 comparison_iface = gr.Interface(
     fn=predict_and_compare,
